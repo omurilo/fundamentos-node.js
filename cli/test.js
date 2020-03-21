@@ -5,7 +5,7 @@ const DEFAULT_ITEM_SAVE = { name: "Flash", power: "speed", id: 1 };
 
 describe("Hero Manipulation Suite", () => {
   before(async () => {
-    await database.save(DEFAULT_ITEM_SAVE);
+    await database.store(DEFAULT_ITEM_SAVE);
   });
 
   it("should search a hero using archives", async () => {
@@ -16,7 +16,7 @@ describe("Hero Manipulation Suite", () => {
 
   it("should save a hero using archives", async () => {
     const expected = { id: 2, name: "Batman", power: "Be a Rich" };
-    await database.save(expected);
+    await database.store(expected);
     const [actual] = await database.search(expected.id);
 
     deepEqual(actual, expected);
@@ -27,5 +27,13 @@ describe("Hero Manipulation Suite", () => {
     const result = await database.remove(DEFAULT_ITEM_SAVE.id);
 
     deepEqual(result, expected);
+  });
+
+  it("should update a hero", async () => {
+    const expected = { id: 2, power: 'Speeding', name: 'Batman' };
+    await database.update(expected);
+    const [actual] = await database.search(expected.id);
+
+    deepEqual(actual, expected);
   })
 });
