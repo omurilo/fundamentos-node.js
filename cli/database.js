@@ -19,11 +19,10 @@ class Database {
   async store(hero) {
     const heros = await this.getArchiveData();
     const id =
-      hero.id <= 2 ? hero.id : Math.floor(Math.random() * (10e5 - 3) + 3);
+      hero.id <= 5 ? hero.id : Math.floor(Math.random() * (10e5 - 3) + 3);
     const heroWithId = { ...hero, id };
     heros.push(heroWithId);
-    const result = await this.writeArchive(heros);
-    return result;
+    return this.writeArchive(heros);
   }
   async search(id) {
     const data = await this.getArchiveData();
@@ -36,16 +35,19 @@ class Database {
     });
     return dataFiltered;
   }
-  async update(hero) {
+  async update(id, modifications) {
     const heros = await this.getArchiveData();
-    const newHeros = heros.map(item => {
-      if (item.id === hero.id) {
-        return { ...item, ...hero };
-      }
-      return item;
-    });
-    const result = await this.writeArchive(newHeros);
-    return result;
+    const index = heros.findIndex(item => item.id === parseInt(id));
+
+    if (index === -1) {
+      throw Error(`id: ${id} - The informed hero not exist`);
+    }
+
+    const hero = heros[index];
+    const updated = { ...hero, ...modifications };
+
+    heros.splice(index, 1);
+    return this.writeArchive([...heros, updated]);
   }
   async remove(id) {
     if (!id) {

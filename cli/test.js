@@ -2,10 +2,16 @@ const { deepEqual, ok } = require("assert");
 const database = require("./database");
 
 const DEFAULT_ITEM_SAVE = { name: "Flash", power: "speed", id: 1 };
+const DEFAULT_ITEM_UPDATE = {
+  name: "Green Lantern",
+  power: "Energy of Ring",
+  id: 2
+};
 
 describe("Hero Manipulation Suite", () => {
   before(async () => {
     await database.store(DEFAULT_ITEM_SAVE);
+    await database.store(DEFAULT_ITEM_UPDATE);
   });
 
   it("should search a hero using archives", async () => {
@@ -15,7 +21,7 @@ describe("Hero Manipulation Suite", () => {
   });
 
   it("should save a hero using archives", async () => {
-    const expected = { id: 2, name: "Batman", power: "Be a Rich" };
+    const expected = DEFAULT_ITEM_SAVE;
     await database.store(expected);
     const [actual] = await database.search(expected.id);
 
@@ -30,10 +36,11 @@ describe("Hero Manipulation Suite", () => {
   });
 
   it("should update a hero", async () => {
-    const expected = { id: 2, power: 'Speeding', name: 'Batman' };
-    await database.update(expected);
+    const newData = { name: "Batman", power: "Money" };
+    const expected = { ...DEFAULT_ITEM_UPDATE, ...newData };
+    await database.update(expected.id, newData);
     const [actual] = await database.search(expected.id);
 
     deepEqual(actual, expected);
-  })
+  });
 });
