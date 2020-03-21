@@ -36,6 +36,27 @@ class Database {
     });
     return dataFiltered;
   }
+  async remove(id) {
+    if (!id) {
+      return this.writeArchive([]);
+    }
+    const heros = await this.getArchiveData();
+    /** first option */
+      const index = heros.findIndex(item => item.id === parseInt(id));
+
+      if (index === -1) {
+        throw Error(`id: ${id} - The informed hero not exist`);
+      }
+      
+      heros.splice(index, 1);
+      return this.writeArchive(heros);
+    
+    /** second option */
+      // const deletedHero = heros.filter(hero => hero.id !== id);
+      
+      // return this.writeArchive(deletedHero);
+    
+  }
 }
 
 module.exports = new Database();

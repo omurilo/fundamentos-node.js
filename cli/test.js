@@ -21,4 +21,11 @@ describe("Hero Manipulation Suite", () => {
 
     deepEqual(actual, expected);
   });
+
+  it("should remove a hero by id", async () => {
+    const expected = true;
+    const result = await database.remove(DEFAULT_ITEM_SAVE.id);
+
+    deepEqual(result, expected);
+  })
 });
