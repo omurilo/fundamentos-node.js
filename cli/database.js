@@ -28,7 +28,7 @@ class Database {
     const data = await this.getArchiveData();
     const dataFiltered = data.filter(item => {
       if (id) {
-        return item.id === id;
+        return item.id === parseInt(id);
       }
 
       return true;
