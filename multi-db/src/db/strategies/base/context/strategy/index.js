@@ -1,12 +1,13 @@
-const ICrud = require("../../../interface/crud");
+const ICrud = require("../../../interfaces/crud");
 
 class ContextStrategy extends ICrud {
   constructor(strategy) {
     super();
     this._database = strategy;
   }
-  index() {
-    return this._database.index();
+
+  index(item) {
+    return this._database.index(item);
   }
 
   show(id) {
@@ -21,8 +22,16 @@ class ContextStrategy extends ICrud {
     return this._database.update(id, item);
   }
 
-  delete(id) {
-    return this._database.delete(id);
+  delete(query) {
+    return this._database.delete(query);
+  }
+
+  isConnected() {
+    return this._database.isConnected();
+  }
+
+  connect() {
+    return this._database.connect();
   }
 }
 

@@ -1,4 +1,4 @@
-const ICrud = require('../interface/crud');
+const ICrud = require('../interfaces/crud');
 
 class MongoDB extends ICrud {
   constructor() {
