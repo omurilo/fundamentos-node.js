@@ -33,6 +33,10 @@ class ContextStrategy extends ICrud {
   static connect() {
     return this._database.connect();
   }
+
+  static defineModel(connection, schema) {
+    return this._database.defineModel(connection, schema);
+  }
 }
 
 module.exports = ContextStrategy;

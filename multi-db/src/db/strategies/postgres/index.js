@@ -3,63 +3,42 @@ const Sequelize = require("sequelize");
 const ICrud = require("../interfaces/crud");
 
 class PostgreSQL extends ICrud {
-  constructor() {
+  constructor(connection, model) {
     super();
-    this._driver = null;
-    this._heros = null;
-
-    this.connect.bind(this)();
+    this._connection = connection;
+    this._schema = model;
   }
   async isConnected() {
     try {
-      await this._driver.authenticate();
+      await this._connection.authenticate();
       return true;
     } catch (error) {
       console.error("fail!", error);
     }
   }
-  async defineModel() {
-    this._heros = this._driver.define(
-      "Heros",
-      {
-        id: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-          primaryKey: true,
-          autoIncrement: true
-        },
-        name: {
-          type: Sequelize.STRING,
-          allowNull: false
-        },
-        power: {
-          type: Sequelize.STRING,
-          allowNull: false
-        }
-      },
-      {
-        tableName: "TB_HEROS"
-      }
-    );
 
-    await this._heros.sync();
+  static async defineModel(connection, schema) {
+    const model = connection.define(schema.name, schema.schema, schema.options);
+    await model.sync();
+    return model;
   }
+
   async show(id) {
-    const result = await this._heros.findByPk(id);
+    const result = await this._schema.findByPk(id);
     return JSON.parse(JSON.stringify(result));
   }
 
   async store(item) {
-    const { dataValues } = await this._heros.create(item);
+    const { dataValues } = await this._schema.create(item);
     return dataValues;
   }
 
   async index(query = {}) {
-    return this._heros.findAll({ where: query, raw: true });
+    return this._schema.findAll({ where: query, raw: true });
   }
 
   update(id, item) {
-    return this._heros.update(item, {
+    return this._schema.update(item, {
       where: { id },
       returning: true,
       raw: true
@@ -68,21 +47,21 @@ class PostgreSQL extends ICrud {
 
   delete({ id, areUCrazy }) {
     const query = id ? { id } : areUCrazy && {};
-    return this._heros.destroy({ where: query });
+    return this._schema.destroy({ where: query });
   }
 
-  async connect() {
-    this._driver = new Sequelize("heros", "murilo", "123", {
+  static connect() {
+    const connection = new Sequelize("heros", "murilo", "123", {
       host: "localhost",
       dialect: "postgres",
       quoteIdentifiers: false,
+      logging: false,
       define: {
         freezeTableName: false,
         timestamps: false
       }
     });
-
-    await this.defineModel();
+    return connection;
   }
 }
 
