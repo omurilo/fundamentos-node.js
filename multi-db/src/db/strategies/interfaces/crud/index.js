@@ -28,6 +28,14 @@ class ICrud {
   isConnected() {
     throw new NotImplementedException();
   }
+
+  static connect() {
+    throw new NotImplementedException();
+  }
+
+  static defineModel() {
+    throw new NotImplementedException();
+  }
 }
 
 module.exports = ICrud;
