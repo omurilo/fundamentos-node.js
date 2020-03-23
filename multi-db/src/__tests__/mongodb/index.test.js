@@ -8,10 +8,20 @@ const MOCK_HERO_STORE = { name: "Hawkman ", power: "Arrows" };
 const MOCK_HERO_UPDATE = { name: "Batman ", power: "Money" };
 
 describe("MongoDB test", function() {
+  this.beforeAll(async function() {
+    await mongodbContext.store(MOCK_HERO_UPDATE);
+  });
+
   this.timeout(Infinity);
   it("should connect to MongoDB", async function() {
     const result = await mongodbContext.isConnected();
 
     assert.equal(result, true);
   });
+
+  it("should be store a hero", async function() {
+    const result = await mongodbContext.store(MOCK_HERO_STORE);
+    assert.deepEqual(result, MOCK_HERO_STORE);
+  });
+
 });
