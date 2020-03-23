@@ -38,12 +38,15 @@ class MongoDB extends ICrud {
     });
     this._heros = mongoose.model("Hero", schema);
   }
-
   async store(item) {
     const store = (await this._heros.create(item)).toObject();
     delete store._id;
     delete store.__v;
     return store;
+  }
+
+  index(query) {
+    return this._heros.find(query, { name: 1, power: 1 }).lean();
   }
 }
 
