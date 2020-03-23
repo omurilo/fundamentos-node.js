@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const Mongoose = require("mongoose");
 
 const ICrud = require("../interfaces/crud");
 
@@ -7,37 +7,63 @@ class MongoDB extends ICrud {
     super();
     this._driver = null;
     this._heros = null;
-    this.connect();
+    this._connect();
   }
+  
   async isConnected() {
     try {
-      if (mongoose.connection.readyState === 1) {
+      if (Mongoose.connection.readyState === 1) {
         return true;
+      } else if (Mongoose.connection.readyState === 2) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return Mongoose.connection.readyState === 1;
       }
 
-      throw mongoose.connection.readyState;
+      throw Mongoose.connection.readyState;
     } catch (error) {
       console.error(`fail! connection that's on ${error} state`);
+      return false;
     }
   }
-  connect() {
-    this._driver = mongoose.connect(
+
+  _connect() {
+    Mongoose.connect(
       "mongodb://murilo:123@localhost:27017/heros",
       {
         useNewUrlParser: true,
         useUnifiedTopology: true
+      },
+      function(error) {
+        if (!error) return;
+        console.log("Connection failed!", error);
       }
     );
-    this.defineModel();
+
+    this._defineModel();
   }
-  defineModel() {
-    const schema = new mongoose.Schema({
-      name: "string",
-      power: "string",
-      birthDate: "string"
+
+  async _defineModel() {
+    const heroSchema = new Mongoose.Schema({
+      name: {
+        type: String,
+        required: true
+      },
+      power: {
+        type: String,
+        required: true
+      },
+      birthDate: {
+        type: String
+      },
+      insertedAt: {
+        type: Date,
+        default: new Date()
+      }
     });
-    this._heros = mongoose.model("Hero", schema);
+
+    this._heros = Mongoose.model("Hero", heroSchema);
   }
+
   async show(query) {
     const show = await this._heros
       .findOne(query, { name: 1, power: 1, _id: 0 })
@@ -49,6 +75,7 @@ class MongoDB extends ICrud {
     const store = (await this._heros.create(item)).toObject();
     delete store._id;
     delete store.__v;
+    delete store.insertedAt;
     return store;
   }
 
@@ -63,13 +90,13 @@ class MongoDB extends ICrud {
     return update;
   }
 
-  delete(id) {
+  async delete(id) {
     const typeOfDelete = id ? "one" : "many";
     if (typeOfDelete === "one") {
-      const deleted = this._heros.deleteOne(id);
+      const deleted = await this._heros.deleteOne(id);
       return !!deleted;
     } else {
-      const deleted = this._heros.deleteMany({});
+      const deleted = await this._heros.deleteMany({});
       return !!deleted.ok;
     }
   }
