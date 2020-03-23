@@ -32,4 +32,11 @@ describe("MongoDB test", function() {
     assert.deepEqual(results, MOCK_HERO_STORE);
   });
 
+  it("should be search a hero by id", async function() {
+    const [item] = await mongodbContext.index({
+      name: MOCK_HERO_STORE.name
+    });
+    const result = await mongodbContext.show({ _id: item._id });
+    assert.deepEqual(result, MOCK_HERO_STORE);
+  });
 });
