@@ -9,6 +9,7 @@ const MOCK_HERO_UPDATE = { name: "Batman ", power: "Money" };
 
 describe("MongoDB test", function() {
   this.beforeAll(async function() {
+    await mongodbContext.delete();
     await mongodbContext.store(MOCK_HERO_UPDATE);
   });
 
@@ -48,5 +49,13 @@ describe("MongoDB test", function() {
     await mongodbContext.update(item._id, newItem);
     const updated = await mongodbContext.show({ _id: item._id });
     assert.deepEqual(updated.name, newItem.name);
+  });
+
+  it("should be delete a hero by id", async function() {
+    const [item] = await mongodbContext.index({
+      name: MOCK_HERO_STORE.name
+    });
+    const result = await mongodbContext.delete({ _id: item._id });
+    assert.equal(result, true);
   });
 });

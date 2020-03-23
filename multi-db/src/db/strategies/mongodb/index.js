@@ -62,6 +62,17 @@ class MongoDB extends ICrud {
       .lean();
     return update;
   }
+
+  delete(id) {
+    const typeOfDelete = id ? "one" : "many";
+    if (typeOfDelete === "one") {
+      const deleted = this._heros.deleteOne(id);
+      return !!deleted;
+    } else {
+      const deleted = this._heros.deleteMany({});
+      return !!deleted.ok;
+    }
+  }
 }
 
 module.exports = MongoDB;
