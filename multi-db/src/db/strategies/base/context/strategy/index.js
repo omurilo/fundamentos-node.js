@@ -6,8 +6,8 @@ class ContextStrategy extends ICrud {
     this._database = strategy;
   }
 
-  index(item) {
-    return this._database.index(item);
+  index(query, skip, limit) {
+    return this._database.index(query, skip, limit);
   }
 
   show(id) {

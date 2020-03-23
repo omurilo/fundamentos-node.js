@@ -21,40 +21,54 @@ describe("MongoDB test", function() {
   });
 
   it("should be store a hero", async function() {
-    const result = await mongodbContext.store(MOCK_HERO_STORE);
-    assert.deepEqual(result, MOCK_HERO_STORE);
+    const { name, power } = await mongodbContext.store(MOCK_HERO_STORE);
+    assert.deepEqual({ name, power }, MOCK_HERO_STORE);
   });
 
   it("should be list a heros", async function() {
-    const [results] = await mongodbContext.index({
-      name: MOCK_HERO_STORE.name
-    });
-    delete results._id;
-    assert.deepEqual(results, MOCK_HERO_STORE);
+    const [{ name, power }] = await mongodbContext.index(
+      {
+        name: MOCK_HERO_STORE.name
+      },
+      0,
+      1
+    );
+    assert.deepEqual({ name, power }, MOCK_HERO_STORE);
   });
 
   it("should be search a hero by id", async function() {
-    const [item] = await mongodbContext.index({
-      name: MOCK_HERO_STORE.name
-    });
-    const result = await mongodbContext.show({ _id: item._id });
-    assert.deepEqual(result, MOCK_HERO_STORE);
+    const [{ name, power }] = await mongodbContext.index(
+      {
+        name: MOCK_HERO_STORE.name
+      },
+      0,
+      1
+    );
+    assert.deepEqual({ name, power }, MOCK_HERO_STORE);
   });
 
   it("should be update a hero by id", async function() {
-    const [item] = await mongodbContext.index({
-      name: MOCK_HERO_UPDATE.name
-    });
+    const [item] = await mongodbContext.index(
+      {
+        name: MOCK_HERO_UPDATE.name
+      },
+      0,
+      1
+    );
     const newItem = { ...MOCK_HERO_UPDATE, name: "Goku" };
     await mongodbContext.update(item._id, newItem);
-    const updated = await mongodbContext.show({ _id: item._id });
-    assert.deepEqual(updated.name, newItem.name);
+    const [{ name }] = await mongodbContext.index({ _id: item._id }, 0, 1);
+    assert.deepEqual(name, newItem.name);
   });
 
   it("should be delete a hero by id", async function() {
-    const [item] = await mongodbContext.index({
-      name: MOCK_HERO_STORE.name
-    });
+    const [item] = await mongodbContext.index(
+      {
+        name: MOCK_HERO_STORE.name
+      },
+      0,
+      1
+    );
     const result = await mongodbContext.delete({ _id: item._id });
     assert.equal(result, true);
   });

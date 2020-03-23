@@ -9,7 +9,7 @@ class MongoDB extends ICrud {
     this._heros = null;
     this._connect();
   }
-  
+
   async isConnected() {
     try {
       if (Mongoose.connection.readyState === 1) {
@@ -64,23 +64,16 @@ class MongoDB extends ICrud {
     this._heros = Mongoose.model("Hero", heroSchema);
   }
 
-  async show(query) {
-    const show = await this._heros
-      .findOne(query, { name: 1, power: 1, _id: 0 })
+  async index(query, skip = 0, limit = 10) {
+    return this._heros
+      .find(query, { name: 1, power: 1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
-    return show;
   }
 
   async store(item) {
-    const store = (await this._heros.create(item)).toObject();
-    delete store._id;
-    delete store.__v;
-    delete store.insertedAt;
-    return store;
-  }
-
-  index(query) {
-    return this._heros.find(query, { name: 1, power: 1 }).lean();
+    return this._heros.create(item);
   }
 
   async update(id, item) {
