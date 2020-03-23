@@ -1,15 +1,42 @@
-const ICrud = require('../interfaces/crud');
+const mongoose = require("mongoose");
+
+const ICrud = require("../interfaces/crud");
 
 class MongoDB extends ICrud {
   constructor() {
-    super()
+    super();
+    this._driver = null;
+    this._heros = null;
+    this.connect();
   }
-  show(id) {
-    return id;
-  }
+  async isConnected() {
+    try {
+      if (mongoose.connection.readyState === 1) {
+        return true;
+      }
 
-  store(item) {
-    return console.log(`salvo com mongoDB: ${JSON.stringify(item, null, 2)}`);
+      throw mongoose.connection.readyState;
+    } catch (error) {
+      console.error(`fail! connection that's on ${error} state`);
+    }
+  }
+  connect() {
+    this._driver = mongoose.connect(
+      "mongodb://murilo:123@localhost:27017/heros",
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      }
+    );
+    this.defineModel();
+  }
+  defineModel() {
+    const schema = new mongoose.Schema({
+      name: "string",
+      power: "string",
+      birthDate: "string"
+    });
+    this._heros = mongoose.model("Hero", schema);
   }
 }
 

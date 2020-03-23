@@ -9,7 +9,6 @@ const MOCK_HERO_UPDATE = { name: "Batman ", power: "Money" };
 
 describe("Postgres test", function() {
   this.beforeAll(async function() {
-    await postgresContext.connect();
     await postgresContext.delete({ areUCrazy: true });
     await postgresContext.store(MOCK_HERO_UPDATE);
   });

@@ -7,6 +7,8 @@ class PostgreSQL extends ICrud {
     super();
     this._driver = null;
     this._heros = null;
+
+    this.connect.bind(this)();
   }
   async isConnected() {
     try {

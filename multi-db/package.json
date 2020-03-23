@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/sequelize": "^4.28.8",
     "mocha": "^7.1.1",
+    "nodemon": "^2.0.2",
     "sequelize-cli": "^5.5.1"
   }
 }
