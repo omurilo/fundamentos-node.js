@@ -55,6 +55,13 @@ class MongoDB extends ICrud {
   index(query) {
     return this._heros.find(query, { name: 1, power: 1 }).lean();
   }
+
+  async update(id, item) {
+    const update = await this._heros
+      .updateOne({ _id: id }, { $set: item }, {})
+      .lean();
+    return update;
+  }
 }
 
 module.exports = MongoDB;

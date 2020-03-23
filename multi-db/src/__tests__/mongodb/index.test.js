@@ -39,4 +39,14 @@ describe("MongoDB test", function() {
     const result = await mongodbContext.show({ _id: item._id });
     assert.deepEqual(result, MOCK_HERO_STORE);
   });
+
+  it("should be update a hero by id", async function() {
+    const [item] = await mongodbContext.index({
+      name: MOCK_HERO_UPDATE.name
+    });
+    const newItem = { ...MOCK_HERO_UPDATE, name: "Goku" };
+    await mongodbContext.update(item._id, newItem);
+    const updated = await mongodbContext.show({ _id: item._id });
+    assert.deepEqual(updated.name, newItem.name);
+  });
 });
