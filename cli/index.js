@@ -7,7 +7,7 @@ const Hero = require("./hero");
   Commander.version("v1")
     .option("-n, --name [value]", "Hero Name")
     .option("-p, --power [value]", "Hero Power")
-    .option("-l, --list", "List heros")
+    .option("-l, --list", "List heroes")
     .option("-s, --search [value]", "Search a hero by id")
     .option("-c, --create", "Save a hero")
     .option("-u, --update [value]", "Update a hero by id")

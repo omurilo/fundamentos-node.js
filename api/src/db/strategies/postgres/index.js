@@ -51,7 +51,7 @@ class PostgreSQL extends ICrud {
   }
 
   static connect() {
-    const connection = new Sequelize("heroes", "murilo", "123", {
+    const connection = new Sequelize("heros", "murilo", "123", {
       host: "localhost",
       dialect: "postgres",
       quoteIdentifiers: false,

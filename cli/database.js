@@ -6,7 +6,7 @@ const writeFileAsync = promisify(writeFile);
 
 class Database {
   constructor() {
-    this.ARCHIVE_NAME = "heros.json";
+    this.ARCHIVE_NAME = "heroes.json";
   }
   async getArchiveData() {
     const archive = await readFileAsync(this.ARCHIVE_NAME, "utf8");
@@ -17,12 +17,12 @@ class Database {
     return true;
   }
   async store(hero) {
-    const heros = await this.getArchiveData();
+    const heroes = await this.getArchiveData();
     const id =
       hero.id <= 5 ? hero.id : Math.floor(Math.random() * (10e5 - 3) + 3);
     const heroWithId = { ...hero, id };
-    heros.push(heroWithId);
-    return this.writeArchive(heros);
+    heroes.push(heroWithId);
+    return this.writeArchive(heroes);
   }
   async search(id) {
     const data = await this.getArchiveData();
@@ -36,36 +36,36 @@ class Database {
     return dataFiltered;
   }
   async update(id, modifications) {
-    const heros = await this.getArchiveData();
-    const index = heros.findIndex(item => item.id === parseInt(id));
+    const heroes = await this.getArchiveData();
+    const index = heroes.findIndex(item => item.id === parseInt(id));
 
     if (index === -1) {
       throw Error(`id: ${id} - The informed hero not exist`);
     }
 
-    const hero = heros[index];
+    const hero = heroes[index];
     const updated = { ...hero, ...modifications };
 
-    heros.splice(index, 1);
-    return this.writeArchive([...heros, updated]);
+    heroes.splice(index, 1);
+    return this.writeArchive([...heroes, updated]);
   }
   async remove(id) {
     if (!id) {
       return this.writeArchive([]);
     }
-    const heros = await this.getArchiveData();
+    const heroes = await this.getArchiveData();
     /** first option */
-    const index = heros.findIndex(item => item.id === parseInt(id));
+    const index = heroes.findIndex(item => item.id === parseInt(id));
 
     if (index === -1) {
       throw Error(`id: ${id} - The informed hero not exist`);
     }
 
-    heros.splice(index, 1);
-    return this.writeArchive(heros);
+    heroes.splice(index, 1);
+    return this.writeArchive(heroes);
 
     /** second option */
-    // const deletedHero = heros.filter(hero => hero.id !== id);
+    // const deletedHero = heroes.filter(hero => hero.id !== id);
 
     // return this.writeArchive(deletedHero);
   }
