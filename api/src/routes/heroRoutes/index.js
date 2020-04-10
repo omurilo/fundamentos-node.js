@@ -50,6 +50,18 @@ class HeroRoutes extends BaseRoute {
     return {
       path: "/hero",
       method: "POST",
+      config: {
+        validate: {
+          failAction: (request, headers, erro) => {
+            throw erro;
+          },
+          payload: {
+            name: Joi.string().min(3).max(100).required(),
+            power: Joi.string().min(3).max(25).required(),
+            birthDate: Joi.string(),
+          },
+        },
+      },
       handler: (request, headers) => {
         const data = request.payload;
 

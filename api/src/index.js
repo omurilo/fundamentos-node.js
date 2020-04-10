@@ -4,12 +4,6 @@ const HeroSchema = require("./db/strategies/mongodb/schemas/heroSchema");
 
 const HeroRoute = require('./routes/heroRoutes');
 
-// contextMongo.store({ name: 'Flash', power: 'Speeding' });
-
-// const PostgreSQL = require('./db/strategies/postgres');
-// const contextPostgres = new contextStrategy(new PostgreSQL());
-// contextPostgres.store({ name: 'Batman', power: 'Money' });
-
 function mapRoutes(instance, methods) {
   return methods.map(method => instance[method]());
 }
