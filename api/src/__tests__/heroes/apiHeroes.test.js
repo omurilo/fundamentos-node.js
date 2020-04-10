@@ -10,12 +10,20 @@ const MOCK_HERO_INITIAL = {
 const MOCK_NONEXISTENT_ID = "5e90afa08ad23212c8ec42fc";
 let MOCK_ID = "";
 
+const TOKEN =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inh1eGFkYSIsImlkIjo3LCJpYXQiOjE1ODY1NTMyODF9.jue1drs_3CWyy1q91rI-jad1D2NM3V9nGFV3zhBrquk";
+
+const headers = {
+  authorization: TOKEN,
+};
+
 describe("hero api test suite", function () {
   this.beforeAll(async () => {
     app = await api;
     const result = await app.inject({
       method: "POST",
       url: "/heroes",
+      headers,
       payload: MOCK_HERO_INITIAL,
     });
 
@@ -27,6 +35,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "GET",
       url: "/heroes",
+      headers,
     });
 
     const data = JSON.parse(result.payload);
@@ -41,6 +50,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "GET",
       url: `/heroes?limit=${LENGTH_LIMIT}`,
+      headers,
     });
 
     const data = JSON.parse(result.payload);
@@ -56,6 +66,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "GET",
       url: `/heroes?limit=${LENGTH_LIMIT}&name=${NAME}`,
+      headers,
     });
 
     const data = JSON.parse(result.payload);
@@ -70,6 +81,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "GET",
       url: `/heroes?limit=${LENGTH_LIMIT}`,
+      headers,
     });
 
     const { statusCode } = result;
@@ -82,6 +94,7 @@ describe("hero api test suite", function () {
       method: "POST",
       url: "/heroes",
       payload: MOCK_HERO_REGISTER,
+      headers,
     });
 
     const data = JSON.parse(result.payload);
@@ -96,6 +109,7 @@ describe("hero api test suite", function () {
       method: "PATCH",
       url: `/heroes/${MOCK_ID}`,
       payload: { power: "God" },
+      headers,
     });
 
     const { name, power } = JSON.parse(result.payload);
@@ -113,6 +127,7 @@ describe("hero api test suite", function () {
       method: "PATCH",
       url: `/heroes/${MOCK_NONEXISTENT_ID}`,
       payload: { power: "God" },
+      headers,
     });
 
     const data = JSON.parse(result.payload);
@@ -130,6 +145,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "DELETE",
       url: `/heroes/${MOCK_ID}`,
+      headers,
     });
 
     const data = JSON.parse(result.payload);
@@ -143,6 +159,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "DELETE",
       url: `/heroes/${MOCK_NONEXISTENT_ID}`,
+      headers,
     });
 
     const data = JSON.parse(result.payload);
@@ -161,6 +178,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "DELETE",
       url: `/heroes/${_id}`,
+      headers,
     });
 
     const data = JSON.parse(result.payload);

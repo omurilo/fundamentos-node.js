@@ -2,6 +2,12 @@ const Joi = require("@hapi/joi");
 const Boom = require("@hapi/boom");
 const BaseRoute = require("../base/baseRoute");
 
+const headers = Joi.object({
+  authorization: Joi.string().description(
+    "Mandatory value, but in the documentation it is automatically added to the headers if a token has been added to the authorization part of the documentation (Authorize button located at the beginning of the documentation)"
+  ),
+}).unknown();
+
 class HeroRoutes extends BaseRoute {
   constructor(db) {
     super();
@@ -9,25 +15,26 @@ class HeroRoutes extends BaseRoute {
   }
 
   list() {
-    const schema = Joi.object({
-      limit: Joi.number().integer().default(10),
-      skip: Joi.number().integer().default(0),
-      name: Joi.string().min(3).max(100),
-      power: Joi.string().min(3).max(25),
+    const query = Joi.object({
+      limit: Joi.number().integer().default(10).description('Amount to limit results'),
+      skip: Joi.number().integer().default(0).description('Amount to skip for pagination'),
+      name: Joi.string().min(3).max(100).description('Name of hero'),
+      power: Joi.string().min(3).max(25).description('Power of hero'),
     });
 
     return {
       path: "/heroes",
       method: "GET",
       options: {
-        tags: ['api', 'heroes'],
-        description: 'should list heroes',
-        notes: 'results can be paged and filtered by name and/or power',
+        tags: ["api", "heroes"],
+        description: "Should list heroes",
+        notes: "Results can be paged and filtered by name and/or power",
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
           },
-          query: schema,
+          query,
+          headers,
         },
       },
       handler: (request) => {
@@ -53,24 +60,24 @@ class HeroRoutes extends BaseRoute {
   }
 
   create() {
-    const schema = Joi.object({
-      name: Joi.string().min(3).max(100).required(),
-      power: Joi.string().min(3).max(25).required(),
-      birthDate: Joi.string(),
+    const payload = Joi.object({
+      name: Joi.string().min(3).max(100).required().description('Name of hero'),
+      power: Joi.string().min(3).max(25).required().description('Power of hero'),
     });
 
     return {
       path: "/heroes",
       method: "POST",
       options: {
-        tags: ['api',  'heroes'],
-        description: 'should register heroes',
-        notes: 'should register hero by name and power',
+        tags: ["api", "heroes"],
+        description: "Should register heroes",
+        notes: "Should register hero by name and power",
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
           },
-          payload: schema,
+          payload,
+          headers,
         },
       },
       handler: (request) => {
@@ -87,29 +94,29 @@ class HeroRoutes extends BaseRoute {
   }
 
   update() {
-    const payloadSchema = Joi.object({
-      name: Joi.string().min(3).max(100),
-      power: Joi.string().min(3).max(25),
-      birthDate: Joi.string(),
+    const payload = Joi.object({
+      name: Joi.string().min(3).max(100).description('Name of hero'),
+      power: Joi.string().min(3).max(25).description('Power of hero'),
     });
 
-    const paramsSchema = Joi.object({
-      id: Joi.string().required(),
+    const params = Joi.object({
+      id: Joi.string().required().description('The hero ID to be updated'),
     });
 
     return {
       path: "/heroes/{id}",
       method: "PATCH",
       options: {
-        tags: ['api',  'heroes'],
-        description: 'should update hero by id',
-        notes: 'should update any field of hero by id',
+        tags: ["api", "heroes"],
+        description: "Should update hero by id",
+        notes: "Should update any field of hero by id",
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
           },
-          params: paramsSchema,
-          payload: payloadSchema,
+          params,
+          payload,
+          headers,
         },
       },
       handler: async (request) => {
@@ -120,8 +127,8 @@ class HeroRoutes extends BaseRoute {
           const data = JSON.parse(JSON.stringify(payload));
 
           const result = await this.db.update(id, data);
-          if(!result) {
-            return Boom.preconditionFailed('Hero id not exist');
+          if (!result) {
+            return Boom.preconditionFailed("Hero id not exist");
           }
           return result;
         } catch (error) {
@@ -133,22 +140,23 @@ class HeroRoutes extends BaseRoute {
   }
 
   delete() {
-    const schema = Joi.object({
-      id: Joi.string().required(),
+    const params = Joi.object({
+      id: Joi.string().required().description('The hero ID to be deleted'),
     });
 
     return {
       path: "/heroes/{id}",
       method: "DELETE",
       options: {
-        tags: ['api', 'heroes'],
-        description: 'should remove hero by id',
-        notes: 'should remove hero by id',
+        tags: ["api", "heroes"],
+        description: "Should remove hero by id",
+        notes: "Should remove hero by id",
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
           },
-          params: schema,
+          params,
+          headers,
         },
       },
       handler: async (request) => {
@@ -157,8 +165,8 @@ class HeroRoutes extends BaseRoute {
 
           const result = await this.db.delete(id);
 
-          if(!result) {
-            return Boom.preconditionFailed('Hero id not exist');
+          if (!result) {
+            return Boom.preconditionFailed("Hero id not exist");
           }
 
           return result;
