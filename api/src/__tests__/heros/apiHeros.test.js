@@ -59,7 +59,7 @@ describe("hero api test suite", function () {
 
     const { statusCode } = result;
 
-    assert.deepEqual(statusCode, 500);
+    assert.deepEqual(statusCode, 400);
   });
 
   it("create /hero", async () => {
