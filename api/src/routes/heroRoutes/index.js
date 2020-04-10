@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const Boom = require('boom');
 const BaseRoute = require("../base/baseRoute");
 
 class HeroRoutes extends BaseRoute {
@@ -24,7 +25,7 @@ class HeroRoutes extends BaseRoute {
           },
         },
       },
-      handler: (request, headers) => {
+      handler: (request) => {
         try {
           const { name, power, skip, limit } = request.query;
           const filter = {};
@@ -40,7 +41,7 @@ class HeroRoutes extends BaseRoute {
           return this.db.index(filter, skip, limit);
         } catch (error) {
           console.log("deu ruim mano", error.message);
-          return headers.response(error).code(500);
+          return Boom.internal(error.message, error);
         }
       },
     };
@@ -62,14 +63,14 @@ class HeroRoutes extends BaseRoute {
           },
         },
       },
-      handler: (request, headers) => {
+      handler: (request) => {
         try {
           const data = request.payload;
 
           return this.db.store(data);
         } catch (error) {
           console.log("deu ruim mano", error.message);
-          return headers.response(error).code(500);
+          return Boom.internal(error.message, error);
         }
       },
     };
@@ -78,11 +79,14 @@ class HeroRoutes extends BaseRoute {
   update() {
     return {
       path: "/heroes/{id}",
-      method: "PUT",
+      method: "PATCH",
       config: {
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
+          },
+          params: {
+            id: Joi.string().required(),
           },
           payload: {
             name: Joi.string().min(3).max(100),
@@ -91,15 +95,17 @@ class HeroRoutes extends BaseRoute {
           },
         },
       },
-      handler: (request, headers) => {
+      handler: (request) => {
         try {
-          const data = request.payload;
+          const { payload } = request;
           const { id } = request.params;
+
+          const data = JSON.parse(JSON.stringify(payload));
 
           return this.db.update(id, data);
         } catch (error) {
           console.log("deu ruim mano", error.message);
-          return headers.response(error).code(500);
+          return Boom.internal(error.message, error);
         }
       },
     };
@@ -109,14 +115,24 @@ class HeroRoutes extends BaseRoute {
     return {
       path: "/heroes/{id}",
       method: "DELETE",
-      handler: (request, headers) => {
+      config: {
+        validate: {
+          failAction: (request, headers, erro) => {
+            throw erro;
+          },
+          params: {
+            id: Joi.string().required(),
+          },
+        },
+      },
+      handler: (request) => {
         try {
           const { id } = request.params;
 
-          return this.db.delete({ _id: id });
+          return this.db.delete(id);
         } catch (error) {
           console.log("deu ruim mano", error.message);
-          return headers.response(error).code(500);
+          return Boom.internal(error.message, error);
         }
       },
     };

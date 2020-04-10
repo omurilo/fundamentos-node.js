@@ -30,7 +30,7 @@ class MongoDB extends ICrud {
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        useFindAndModify: false
+        useFindAndModify: false,
       },
       function (error) {
         if (!error) return;
@@ -63,7 +63,7 @@ class MongoDB extends ICrud {
   async delete(id) {
     const typeOfDelete = id ? "one" : "many";
     if (typeOfDelete === "one") {
-      const deleted = await this._schema.deleteOne(id);
+      const deleted = await this._schema.deleteOne({ _id: id });
       return !!deleted;
     } else {
       const deleted = await this._schema.deleteMany({});

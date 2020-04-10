@@ -87,7 +87,7 @@ describe("hero api test suite", function () {
     const hero = JSON.parse(searchResult.payload);
 
     const result = await app.inject({
-      method: "PUT",
+      method: "PATCH",
       url: `/heroes/${hero[0]._id}`,
       payload: { name: hero[0].name, power: "God" },
     });
@@ -118,5 +118,23 @@ describe("hero api test suite", function () {
 
     assert.deepEqual(statusCode, 200);
     assert.ok(data);
+  });
+
+  it("delete /heroes shouldn't remove hero with invalid id", async () => {
+    const _id = 'ID_INVALIDO';
+    const result = await app.inject({
+      method: "DELETE",
+      url: `/heroes/${_id}`
+    });
+
+    const data = JSON.parse(result.payload);
+    const { statusCode } = result;
+    const expected = {
+      statusCode: 500,
+      message: 'An internal server error occurred',
+      error: 'Internal Server Error',
+    }
+    assert.deepEqual(statusCode, 500);
+    assert.deepEqual(data, expected);
   });
 });
