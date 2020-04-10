@@ -2,11 +2,25 @@ const assert = require("assert");
 const api = require("../../");
 
 let app = {};
-const MOCK_HERO = { name: "Super Shock", power: "Energy" };
+const MOCK_HERO_REGISTER = { name: "Super Shock", power: "Energy" };
+const MOCK_HERO_INITIAL = {
+  name: "Chapolin Colorado",
+  power: "Marreta Bionica",
+};
+const MOCK_NONEXISTENT_ID = "5e90afa08ad23212c8ec42fc";
+let MOCK_ID = "";
 
 describe("hero api test suite", function () {
   this.beforeAll(async () => {
     app = await api;
+    const result = await app.inject({
+      method: "POST",
+      url: "/heroes",
+      payload: MOCK_HERO_INITIAL,
+    });
+
+    const data = JSON.parse(result.payload);
+    MOCK_ID = data._id;
   });
 
   it("list /heroes", async () => {
@@ -67,7 +81,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "POST",
       url: "/heroes",
-      payload: MOCK_HERO,
+      payload: MOCK_HERO_REGISTER,
     });
 
     const data = JSON.parse(result.payload);
@@ -78,39 +92,44 @@ describe("hero api test suite", function () {
   });
 
   it("update /heroes", async () => {
-    const NAME = "Goku";
-    const searchResult = await app.inject({
-      method: "GET",
-      url: `/heroes?name=${NAME}`,
-    });
-
-    const hero = JSON.parse(searchResult.payload);
-
     const result = await app.inject({
       method: "PATCH",
-      url: `/heroes/${hero[0]._id}`,
-      payload: { name: hero[0].name, power: "God" },
+      url: `/heroes/${MOCK_ID}`,
+      payload: { power: "God" },
     });
 
     const { name, power } = JSON.parse(result.payload);
     const { statusCode } = result;
 
     assert.deepEqual(statusCode, 200);
-    assert.deepEqual({ power, name }, { power: "God", name: hero[0].name });
+    assert.deepEqual(
+      { power, name },
+      { power: "God", name: MOCK_HERO_INITIAL.name }
+    );
+  });
+
+  it("update /heroes shouldn't update hero with id not exist", async () => {
+    const result = await app.inject({
+      method: "PATCH",
+      url: `/heroes/${MOCK_NONEXISTENT_ID}`,
+      payload: { power: "God" },
+    });
+
+    const data = JSON.parse(result.payload);
+    const { statusCode } = result;
+    const expected = {
+      statusCode: 412,
+      error: "Precondition Failed",
+      message: "Hero id not exist",
+    };
+    assert.deepEqual(statusCode, 412);
+    assert.deepEqual(data, expected);
   });
 
   it("delete /heroes should remove hero", async () => {
-    const NAME = "gok";
-    const searchResult = await app.inject({
-      method: "GET",
-      url: `/heroes?name=${NAME}`,
-    });
-
-    const hero = JSON.parse(searchResult.payload);
-
     const result = await app.inject({
       method: "DELETE",
-      url: `/heroes/${hero[0]._id}`
+      url: `/heroes/${MOCK_ID}`,
     });
 
     const data = JSON.parse(result.payload);
@@ -120,20 +139,37 @@ describe("hero api test suite", function () {
     assert.ok(data);
   });
 
-  it("delete /heroes shouldn't remove hero with invalid id", async () => {
-    const _id = 'ID_INVALIDO';
+  it("delete /heroes shouldn't remove hero with id not exist", async () => {
     const result = await app.inject({
       method: "DELETE",
-      url: `/heroes/${_id}`
+      url: `/heroes/${MOCK_NONEXISTENT_ID}`,
+    });
+
+    const data = JSON.parse(result.payload);
+    const { statusCode } = result;
+    const expected = {
+      statusCode: 412,
+      error: "Precondition Failed",
+      message: "Hero id not exist",
+    };
+    assert.deepEqual(statusCode, 412);
+    assert.deepEqual(data, expected);
+  });
+
+  it("delete /heroes shouldn't remove hero with invalid id", async () => {
+    const _id = `${MOCK_NONEXISTENT_ID}1`;
+    const result = await app.inject({
+      method: "DELETE",
+      url: `/heroes/${_id}`,
     });
 
     const data = JSON.parse(result.payload);
     const { statusCode } = result;
     const expected = {
       statusCode: 500,
-      message: 'An internal server error occurred',
-      error: 'Internal Server Error',
-    }
+      message: "An internal server error occurred",
+      error: "Internal Server Error",
+    };
     assert.deepEqual(statusCode, 500);
     assert.deepEqual(data, expected);
   });

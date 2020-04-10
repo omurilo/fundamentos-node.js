@@ -64,7 +64,7 @@ class MongoDB extends ICrud {
     const typeOfDelete = id ? "one" : "many";
     if (typeOfDelete === "one") {
       const deleted = await this._schema.deleteOne({ _id: id });
-      return !!deleted;
+      return !!deleted.deletedCount;
     } else {
       const deleted = await this._schema.deleteMany({});
       return !!deleted.ok;

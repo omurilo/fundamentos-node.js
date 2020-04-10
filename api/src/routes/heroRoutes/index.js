@@ -1,5 +1,5 @@
-const Joi = require("joi");
-const Boom = require('boom');
+const Joi = require("@hapi/joi");
+const Boom = require("@hapi/boom");
 const BaseRoute = require("../base/baseRoute");
 
 class HeroRoutes extends BaseRoute {
@@ -9,20 +9,25 @@ class HeroRoutes extends BaseRoute {
   }
 
   list() {
+    const schema = Joi.object({
+      limit: Joi.number().integer().default(10),
+      skip: Joi.number().integer().default(0),
+      name: Joi.string().min(3).max(100),
+      power: Joi.string().min(3).max(25),
+    });
+
     return {
       path: "/heroes",
       method: "GET",
-      config: {
+      options: {
+        tags: ['api', 'heroes'],
+        description: 'should list heroes',
+        notes: 'results can be paged and filtered by name and/or power',
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
           },
-          query: {
-            limit: Joi.number().integer().default(10),
-            skip: Joi.number().integer().default(0),
-            name: Joi.string().min(3).max(100),
-            power: Joi.string().min(3).max(25),
-          },
+          query: schema,
         },
       },
       handler: (request) => {
@@ -48,19 +53,24 @@ class HeroRoutes extends BaseRoute {
   }
 
   create() {
+    const schema = Joi.object({
+      name: Joi.string().min(3).max(100).required(),
+      power: Joi.string().min(3).max(25).required(),
+      birthDate: Joi.string(),
+    });
+
     return {
       path: "/heroes",
       method: "POST",
-      config: {
+      options: {
+        tags: ['api',  'heroes'],
+        description: 'should register heroes',
+        notes: 'should register hero by name and power',
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
           },
-          payload: {
-            name: Joi.string().min(3).max(100).required(),
-            power: Joi.string().min(3).max(25).required(),
-            birthDate: Joi.string(),
-          },
+          payload: schema,
         },
       },
       handler: (request) => {
@@ -77,32 +87,43 @@ class HeroRoutes extends BaseRoute {
   }
 
   update() {
+    const payloadSchema = Joi.object({
+      name: Joi.string().min(3).max(100),
+      power: Joi.string().min(3).max(25),
+      birthDate: Joi.string(),
+    });
+
+    const paramsSchema = Joi.object({
+      id: Joi.string().required(),
+    });
+
     return {
       path: "/heroes/{id}",
       method: "PATCH",
-      config: {
+      options: {
+        tags: ['api',  'heroes'],
+        description: 'should update hero by id',
+        notes: 'should update any field of hero by id',
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
           },
-          params: {
-            id: Joi.string().required(),
-          },
-          payload: {
-            name: Joi.string().min(3).max(100),
-            power: Joi.string().min(3).max(25),
-            birthDate: Joi.string(),
-          },
+          params: paramsSchema,
+          payload: payloadSchema,
         },
       },
-      handler: (request) => {
+      handler: async (request) => {
         try {
           const { payload } = request;
           const { id } = request.params;
 
           const data = JSON.parse(JSON.stringify(payload));
 
-          return this.db.update(id, data);
+          const result = await this.db.update(id, data);
+          if(!result) {
+            return Boom.preconditionFailed('Hero id not exist');
+          }
+          return result;
         } catch (error) {
           console.log("deu ruim mano", error.message);
           return Boom.internal(error.message, error);
@@ -112,24 +133,35 @@ class HeroRoutes extends BaseRoute {
   }
 
   delete() {
+    const schema = Joi.object({
+      id: Joi.string().required(),
+    });
+
     return {
       path: "/heroes/{id}",
       method: "DELETE",
-      config: {
+      options: {
+        tags: ['api', 'heroes'],
+        description: 'should remove hero by id',
+        notes: 'should remove hero by id',
         validate: {
           failAction: (request, headers, erro) => {
             throw erro;
           },
-          params: {
-            id: Joi.string().required(),
-          },
+          params: schema,
         },
       },
-      handler: (request) => {
+      handler: async (request) => {
         try {
           const { id } = request.params;
 
-          return this.db.delete(id);
+          const result = await this.db.delete(id);
+
+          if(!result) {
+            return Boom.preconditionFailed('Hero id not exist');
+          }
+
+          return result;
         } catch (error) {
           console.log("deu ruim mano", error.message);
           return Boom.internal(error.message, error);
