@@ -63,9 +63,44 @@ class HeroRoutes extends BaseRoute {
         },
       },
       handler: (request, headers) => {
-        const data = request.payload;
+        try {
+          const data = request.payload;
 
-        return this.db.store(data);
+          return this.db.store(data);
+        } catch (error) {
+          console.log("deu ruim mano", error.message);
+          return headers.response(error).code(500);
+        }
+      },
+    };
+  }
+
+  update() {
+    return {
+      path: "/hero/{id}",
+      method: "PUT",
+      config: {
+        validate: {
+          failAction: (request, headers, erro) => {
+            throw erro;
+          },
+          payload: {
+            name: Joi.string().min(3).max(100),
+            power: Joi.string().min(3).max(25),
+            birthDate: Joi.string(),
+          },
+        },
+      },
+      handler: (request, headers) => {
+        try {
+          const data = request.payload;
+          const { id } = request.params;
+
+          return this.db.update(id, data);
+        } catch (error) {
+          console.log("deu ruim mano", error.message);
+          return headers.response(error).code(500);
+        }
       },
     };
   }

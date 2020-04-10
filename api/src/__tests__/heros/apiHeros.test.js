@@ -2,6 +2,7 @@ const assert = require("assert");
 const api = require("../../");
 
 let app = {};
+const MOCK_HERO = { name: "Super Shock", power: "Energy" };
 
 describe("hero api test suite", function () {
   this.beforeAll(async () => {
@@ -21,7 +22,7 @@ describe("hero api test suite", function () {
     assert.ok(Array.isArray(data));
   });
 
-  it('list /heroes should return max 10 registers', async() => {
+  it("list /heroes should return max 10 registers", async () => {
     const LENGTH_LIMIT = 10;
     const result = await app.inject({
       method: "GET",
@@ -35,9 +36,9 @@ describe("hero api test suite", function () {
     assert.ok(data.length <= 10);
   });
 
-  it('list /heroes should filter by name', async() => {
+  it("list /heroes should filter by name", async () => {
     const LENGTH_LIMIT = 10;
-    const NAME = 'Goku';
+    const NAME = "Goku";
     const result = await app.inject({
       method: "GET",
       url: `/heroes?limit=${LENGTH_LIMIT}&name=${NAME}`,
@@ -50,8 +51,8 @@ describe("hero api test suite", function () {
     assert.deepEqual(data[0].name, NAME);
   });
 
-  it('list /heroes should return error on validation parameters', async() => {
-    const LENGTH_LIMIT = 'i5';
+  it("list /heroes should return error on validation parameters", async () => {
+    const LENGTH_LIMIT = "i5";
     const result = await app.inject({
       method: "GET",
       url: `/heroes?limit=${LENGTH_LIMIT}`,
@@ -66,7 +67,7 @@ describe("hero api test suite", function () {
     const result = await app.inject({
       method: "POST",
       url: "/hero",
-      payload: { name: "Super Shock", power: "Energy" },
+      payload: MOCK_HERO,
     });
 
     const data = JSON.parse(result.payload);
@@ -75,4 +76,27 @@ describe("hero api test suite", function () {
     assert.deepEqual(statusCode, 200);
     assert.deepEqual(data["name"], "Super Shock");
   });
+
+  it("update /hero", async () => {
+    const NAME = "Goku";
+    const searchResult = await app.inject({
+      method: "GET",
+      url: `/heroes?name=${NAME}`,
+    });
+
+    const hero = JSON.parse(searchResult.payload);
+
+    const result = await app.inject({
+      method: "PUT",
+      url: `/hero/${hero[0]._id}`,
+      payload: { name: hero[0].name, power: "God" },
+    });
+
+    const { name, power } = JSON.parse(result.payload);
+    const { statusCode } = result;
+
+    assert.deepEqual(statusCode, 200);
+    assert.deepEqual({ power, name }, { power: "God", name: hero[0].name });
+  });
+
 });

@@ -13,7 +13,7 @@ class MongoDB extends ICrud {
       if (this._connection.readyState === 1) {
         return true;
       } else if (this._connection.readyState === 2) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         return this._connection.readyState === 1;
       }
 
@@ -29,14 +29,15 @@ class MongoDB extends ICrud {
       "mongodb://murilo:123@localhost:27017/heros",
       {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useFindAndModify: false
       },
-      function(error) {
+      function (error) {
         if (!error) return;
         console.log("Connection failed!", error);
       }
     );
-    
+
     return Mongoose.connection;
   }
 
@@ -54,7 +55,7 @@ class MongoDB extends ICrud {
 
   async update(id, item) {
     const update = await this._schema
-      .updateOne({ _id: id }, { $set: item }, {})
+      .findOneAndUpdate({ _id: id }, { $set: item }, { returnOriginal: false })
       .lean();
     return update;
   }
