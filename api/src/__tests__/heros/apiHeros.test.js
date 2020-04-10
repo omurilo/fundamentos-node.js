@@ -63,10 +63,10 @@ describe("hero api test suite", function () {
     assert.deepEqual(statusCode, 400);
   });
 
-  it("create /hero", async () => {
+  it("create /heroes", async () => {
     const result = await app.inject({
       method: "POST",
-      url: "/hero",
+      url: "/heroes",
       payload: MOCK_HERO,
     });
 
@@ -77,7 +77,7 @@ describe("hero api test suite", function () {
     assert.deepEqual(data["name"], "Super Shock");
   });
 
-  it("update /hero", async () => {
+  it("update /heroes", async () => {
     const NAME = "Goku";
     const searchResult = await app.inject({
       method: "GET",
@@ -88,7 +88,7 @@ describe("hero api test suite", function () {
 
     const result = await app.inject({
       method: "PUT",
-      url: `/hero/${hero[0]._id}`,
+      url: `/heroes/${hero[0]._id}`,
       payload: { name: hero[0].name, power: "God" },
     });
 
@@ -99,4 +99,24 @@ describe("hero api test suite", function () {
     assert.deepEqual({ power, name }, { power: "God", name: hero[0].name });
   });
 
+  it("delete /heroes should remove hero", async () => {
+    const NAME = "gok";
+    const searchResult = await app.inject({
+      method: "GET",
+      url: `/heroes?name=${NAME}`,
+    });
+
+    const hero = JSON.parse(searchResult.payload);
+
+    const result = await app.inject({
+      method: "DELETE",
+      url: `/heroes/${hero[0]._id}`
+    });
+
+    const data = JSON.parse(result.payload);
+    const { statusCode } = result;
+
+    assert.deepEqual(statusCode, 200);
+    assert.ok(data);
+  });
 });

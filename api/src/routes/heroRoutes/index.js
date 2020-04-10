@@ -48,7 +48,7 @@ class HeroRoutes extends BaseRoute {
 
   create() {
     return {
-      path: "/hero",
+      path: "/heroes",
       method: "POST",
       config: {
         validate: {
@@ -77,7 +77,7 @@ class HeroRoutes extends BaseRoute {
 
   update() {
     return {
-      path: "/hero/{id}",
+      path: "/heroes/{id}",
       method: "PUT",
       config: {
         validate: {
@@ -97,6 +97,23 @@ class HeroRoutes extends BaseRoute {
           const { id } = request.params;
 
           return this.db.update(id, data);
+        } catch (error) {
+          console.log("deu ruim mano", error.message);
+          return headers.response(error).code(500);
+        }
+      },
+    };
+  }
+
+  delete() {
+    return {
+      path: "/heroes/{id}",
+      method: "DELETE",
+      handler: (request, headers) => {
+        try {
+          const { id } = request.params;
+
+          return this.db.delete({ _id: id });
         } catch (error) {
           console.log("deu ruim mano", error.message);
           return headers.response(error).code(500);
