@@ -19,7 +19,7 @@ const HeroSchema = {
     }
   },
   options: {
-    tableName: "TB_HEROS"
+    tableName: "TB_HEROES"
   }
 }
 

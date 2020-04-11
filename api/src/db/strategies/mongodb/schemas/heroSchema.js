@@ -1,5 +1,5 @@
 const Mongoose = require('mongoose');
-const heroSchema = new Mongoose.Schema({
+const HeroSchema = new Mongoose.Schema({
     name: {
       type: String,
       required: true
@@ -17,4 +17,4 @@ const heroSchema = new Mongoose.Schema({
     }
   });
 
-module.exports = Mongoose.model("Hero", heroSchema);
+module.exports = Mongoose.model("Heroes", HeroSchema);

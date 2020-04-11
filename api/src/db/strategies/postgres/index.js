@@ -38,11 +38,11 @@ class PostgreSQL extends ICrud {
   }
 
   update(id, item, upsert = false) {
-    const fn = upsert ? 'upsert' : 'update';
+    const fn = upsert ? "upsert" : "update";
     return this._schema[fn](item, {
       where: { id },
       returning: true,
-      raw: true
+      raw: true,
     });
   }
 
@@ -52,15 +52,18 @@ class PostgreSQL extends ICrud {
   }
 
   static connect() {
-    const connection = new Sequelize("heros", "murilo", "123", {
-      host: "localhost",
-      dialect: "postgres",
+    const connection = new Sequelize(process.env.DB_URL, {
+      dialect: process.env.DB_DIALECT,
       quoteIdentifiers: false,
       logging: false,
+      ssl: Boolean(JSON.parse(process.env.SSL_DB)),
+      dialectOptions: {
+        ssl: Boolean(JSON.parse(process.env.SSL_DB)),
+      },
       define: {
         freezeTableName: false,
-        timestamps: false
-      }
+        timestamps: false,
+      },
     });
     return connection;
   }

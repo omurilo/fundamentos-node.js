@@ -4,10 +4,6 @@ const Jwt = require("@commercial/jwt");
 const BaseRoute = require("../base/baseRoute");
 const PasswordHelper = require("../../helpers/PasswordHelper");
 
-const Context = require("../../db/strategies/base/context/strategy");
-const PostgreSQL = require("../../db/strategies/postgres");
-const UserSchema = require("../../db/strategies/postgres/schemas/userSchema");
-
 class AuthRoute extends BaseRoute {
   constructor(db, secret) {
     super();
@@ -39,11 +35,7 @@ class AuthRoute extends BaseRoute {
       handler: async (request) => {
         const { username, password } = request.payload;
 
-        const connection = await PostgreSQL.connect();
-        const model = await PostgreSQL.defineModel(connection, UserSchema);
-        const context = new Context(new PostgreSQL(connection, model));
-
-        const [result] = await context.index({ username: username.toLowerCase() });
+        const [result] = await this.db.index({ username: username.toLowerCase() });
 
         if (!result) {
           return Boom.unauthorized("User not found");

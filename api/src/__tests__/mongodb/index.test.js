@@ -1,6 +1,6 @@
 const assert = require("assert");
 const MongoDB = require("../../db/strategies/mongodb");
-const heroSchema = require('../../db/strategies/mongodb/schemas/heroSchema');
+const HeroSchema = require('../../db/strategies/mongodb/schemas/heroSchema');
 const Context = require("../../db/strategies/base/context/strategy");
 
 const MOCK_HERO_STORE = { name: "Hawkman ", power: "Arrows" };
@@ -10,8 +10,8 @@ let mongodbContext = {};
 
 describe("MongoDB test", function() {
   this.beforeAll(async function() {
-    const connection = MongoDB.connect();
-    mongodbContext = new Context(new MongoDB(connection, heroSchema));
+    const connection = await MongoDB.connect();
+    mongodbContext = new Context(new MongoDB(connection, HeroSchema));
     await mongodbContext.delete();
     await mongodbContext.store(MOCK_HERO_UPDATE);
   });

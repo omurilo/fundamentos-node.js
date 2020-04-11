@@ -53,7 +53,7 @@ class HeroRoutes extends BaseRoute {
           return this.db.index(filter, skip, limit);
         } catch (error) {
           console.log("deu ruim mano", error.message);
-          return Boom.internal(error.message, error);
+          return Boom.internal("error.message", error);
         }
       },
     };

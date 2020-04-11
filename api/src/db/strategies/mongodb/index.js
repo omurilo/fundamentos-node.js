@@ -1,4 +1,5 @@
 const Mongoose = require("mongoose");
+const { promisify } = require("util");
 const ICrud = require("../interfaces/crud");
 
 class MongoDB extends ICrud {
@@ -24,19 +25,12 @@ class MongoDB extends ICrud {
     }
   }
 
-  static connect() {
-    Mongoose.connect(
-      "mongodb://murilo:123@localhost:27017/heros",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-      },
-      function (error) {
-        if (!error) return;
-        console.log("Connection failed!", error);
-      }
-    );
+  static async connect() {
+    await promisify(Mongoose.connect)(process.env.MONGODB_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
 
     return Mongoose.connection;
   }

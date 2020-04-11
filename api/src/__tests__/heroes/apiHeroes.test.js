@@ -10,8 +10,7 @@ const MOCK_HERO_INITIAL = {
 const MOCK_NONEXISTENT_ID = "5e90afa08ad23212c8ec42fc";
 let MOCK_ID = "";
 
-const TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inh1eGFkYSIsImlkIjo3LCJpYXQiOjE1ODY1NTMyODF9.jue1drs_3CWyy1q91rI-jad1D2NM3V9nGFV3zhBrquk";
+const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inh1eGFkYSIsImlkIjoxLCJpYXQiOjE1ODY1Njc3NjB9.JAwJPdqD4rW1Bgb0ZexM7gG0lL_R9r74XeR-mIt2MJw";
 
 const headers = {
   authorization: TOKEN,
@@ -62,10 +61,9 @@ describe("hero api test suite", function () {
 
   it("list /heroes should filter by name", async () => {
     const LENGTH_LIMIT = 10;
-    const NAME = "Goku";
     const result = await app.inject({
       method: "GET",
-      url: `/heroes?limit=${LENGTH_LIMIT}&name=${NAME}`,
+      url: `/heroes?limit=${LENGTH_LIMIT}&name=${MOCK_HERO_INITIAL.name}`,
       headers,
     });
 
@@ -73,7 +71,7 @@ describe("hero api test suite", function () {
     const { statusCode } = result;
 
     assert.deepEqual(statusCode, 200);
-    assert.deepEqual(data[0].name, NAME);
+    assert.deepEqual(data[0].name, MOCK_HERO_INITIAL.name);
   });
 
   it("list /heroes should return error on validation parameters", async () => {
