@@ -16,10 +16,16 @@ class HeroRoutes extends BaseRoute {
 
   list() {
     const query = Joi.object({
-      limit: Joi.number().integer().default(10).description('Amount to limit results'),
-      skip: Joi.number().integer().default(0).description('Amount to skip for pagination'),
-      name: Joi.string().min(3).max(100).description('Name of hero'),
-      power: Joi.string().min(3).max(25).description('Power of hero'),
+      limit: Joi.number()
+        .integer()
+        .default(10)
+        .description("Amount to limit results"),
+      skip: Joi.number()
+        .integer()
+        .default(0)
+        .description("Amount to skip for pagination"),
+      name: Joi.string().min(3).max(100).description("Name of hero"),
+      power: Joi.string().min(3).max(25).description("Power of hero"),
     });
 
     return {
@@ -53,7 +59,7 @@ class HeroRoutes extends BaseRoute {
           return this.db.index(filter, skip, limit);
         } catch (error) {
           console.log("deu ruim mano", error.message);
-          return Boom.internal("error.message", error);
+          return Boom.internal(error.message, error);
         }
       },
     };
@@ -61,8 +67,12 @@ class HeroRoutes extends BaseRoute {
 
   create() {
     const payload = Joi.object({
-      name: Joi.string().min(3).max(100).required().description('Name of hero'),
-      power: Joi.string().min(3).max(25).required().description('Power of hero'),
+      name: Joi.string().min(3).max(100).required().description("Name of hero"),
+      power: Joi.string()
+        .min(3)
+        .max(25)
+        .required()
+        .description("Power of hero"),
     });
 
     return {
@@ -95,12 +105,12 @@ class HeroRoutes extends BaseRoute {
 
   update() {
     const payload = Joi.object({
-      name: Joi.string().min(3).max(100).description('Name of hero'),
-      power: Joi.string().min(3).max(25).description('Power of hero'),
+      name: Joi.string().min(3).max(100).description("Name of hero"),
+      power: Joi.string().min(3).max(25).description("Power of hero"),
     });
 
     const params = Joi.object({
-      id: Joi.string().required().description('The hero ID to be updated'),
+      id: Joi.string().required().description("The hero ID to be updated"),
     });
 
     return {
@@ -141,7 +151,7 @@ class HeroRoutes extends BaseRoute {
 
   delete() {
     const params = Joi.object({
-      id: Joi.string().required().description('The hero ID to be deleted'),
+      id: Joi.string().required().description("The hero ID to be deleted"),
     });
 
     return {

@@ -1,78 +1,54 @@
 const assert = require("assert");
 const MongoDB = require("../../db/strategies/mongodb");
-const HeroSchema = require('../../db/strategies/mongodb/schemas/heroSchema');
+const HeroSchema = require("../../db/strategies/mongodb/schemas/heroSchema");
 const Context = require("../../db/strategies/base/context/strategy");
 
 const MOCK_HERO_STORE = { name: "Hawkman ", power: "Arrows" };
-const MOCK_HERO_UPDATE = { name: "Batman ", power: "Money" };
+let MOCK_HERO_DELETED_ID = "";
 
 let mongodbContext = {};
 
-describe("MongoDB test", function() {
-  this.beforeAll(async function() {
+describe("MongoDB test", function () {
+  it("should connect to MongoDB", async () => {
     const connection = await MongoDB.connect();
     mongodbContext = new Context(new MongoDB(connection, HeroSchema));
-    await mongodbContext.delete();
-    await mongodbContext.store(MOCK_HERO_UPDATE);
   });
-
   this.timeout(Infinity);
-  it("should connect to MongoDB", async function() {
+
+  it("should verify if is connected to MongoDB", async function () {
     const result = await mongodbContext.isConnected();
 
     assert.equal(result, true);
   });
 
-  it("should be store a hero", async function() {
-    const { name, power } = await mongodbContext.store(MOCK_HERO_STORE);
+  it("should be store a hero", async function () {
+    const { _id, name, power } = await mongodbContext.store(MOCK_HERO_STORE);
+    MOCK_HERO_DELETED_ID = _id;
     assert.deepEqual({ name, power }, MOCK_HERO_STORE);
   });
 
-  it("should be list a heroes", async function() {
-    const [{ name, power }] = await mongodbContext.index(
-      {
-        name: MOCK_HERO_STORE.name
-      },
-      0,
-      1
-    );
+  it("should be list a heroes", async function () {
+    const [{ name, power }] = await mongodbContext.index({
+      name: MOCK_HERO_STORE.name,
+    });
     assert.deepEqual({ name, power }, MOCK_HERO_STORE);
   });
 
-  it("should be search a hero by id", async function() {
-    const [{ name, power }] = await mongodbContext.index(
-      {
-        name: MOCK_HERO_STORE.name
-      },
-      0,
-      1
-    );
+  it("should be search a hero by id", async function () {
+    const [{ name, power }] = await mongodbContext.index({
+      name: MOCK_HERO_STORE.name,
+    });
     assert.deepEqual({ name, power }, MOCK_HERO_STORE);
   });
 
-  it("should be update a hero by id", async function() {
-    const [item] = await mongodbContext.index(
-      {
-        name: MOCK_HERO_UPDATE.name
-      },
-      0,
-      1
-    );
-    const newItem = { ...MOCK_HERO_UPDATE, name: "Goku" };
-    await mongodbContext.update(item._id, newItem);
-    const [{ name }] = await mongodbContext.index({ _id: item._id }, 0, 1);
+  it("should be update a hero by id", async function () {
+    const newItem = { ...MOCK_HERO_STORE, name: "Goku" };
+    const { name } = await mongodbContext.update(MOCK_HERO_DELETED_ID, newItem);
     assert.deepEqual(name, newItem.name);
   });
 
-  it("should be delete a hero by id", async function() {
-    const [item] = await mongodbContext.index(
-      {
-        name: MOCK_HERO_STORE.name
-      },
-      0,
-      1
-    );
-    const result = await mongodbContext.delete({ _id: item._id });
+  it("should be delete a hero by id", async function () {
+    const result = await mongodbContext.delete(MOCK_HERO_DELETED_ID);
     assert.equal(result, true);
   });
 });

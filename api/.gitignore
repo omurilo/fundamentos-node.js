@@ -3,3 +3,5 @@ hapi-heroes-decrypt-key
 node_modules
 
 .vscode/
+.nyc_output
+coverage

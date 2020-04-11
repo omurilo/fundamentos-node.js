@@ -14,6 +14,7 @@ class PostgreSQL extends ICrud {
       return true;
     } catch (error) {
       console.error("fail!", error);
+      return false;
     }
   }
 
@@ -33,7 +34,7 @@ class PostgreSQL extends ICrud {
     return dataValues;
   }
 
-  async index(query = {}) {
+  async index(query) {
     return this._schema.findAll({ where: query, raw: true });
   }
 

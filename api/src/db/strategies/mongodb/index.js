@@ -10,19 +10,9 @@ class MongoDB extends ICrud {
   }
 
   async isConnected() {
-    try {
-      if (this._connection.readyState === 1) {
-        return true;
-      } else if (this._connection.readyState === 2) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        return this._connection.readyState === 1;
-      }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      throw this._connection.readyState;
-    } catch (error) {
-      console.error(`fail! connection that's on ${error} state`);
-      return false;
-    }
+    return this._connection.readyState === 1;
   }
 
   static async connect() {
@@ -55,14 +45,8 @@ class MongoDB extends ICrud {
   }
 
   async delete(id) {
-    const typeOfDelete = id ? "one" : "many";
-    if (typeOfDelete === "one") {
-      const deleted = await this._schema.deleteOne({ _id: id });
-      return !!deleted.deletedCount;
-    } else {
-      const deleted = await this._schema.deleteMany({});
-      return !!deleted.ok;
-    }
+    const deleted = await this._schema.deleteOne({ _id: id });
+    return !!deleted.deletedCount;
   }
 }
 

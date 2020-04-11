@@ -63,7 +63,7 @@ describe("hero api test suite", function () {
     const LENGTH_LIMIT = 10;
     const result = await app.inject({
       method: "GET",
-      url: `/heroes?limit=${LENGTH_LIMIT}&name=${MOCK_HERO_INITIAL.name}`,
+      url: `/heroes?limit=${LENGTH_LIMIT}&name=${MOCK_HERO_INITIAL.name}&power=${MOCK_HERO_INITIAL.power}`,
       headers,
     });
 

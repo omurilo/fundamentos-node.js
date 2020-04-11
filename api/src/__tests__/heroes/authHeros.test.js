@@ -39,4 +39,54 @@ describe("Auth test suite", function () {
     assert.deepEqual(statusCode, 200);
     assert.ok(data.token.length >= 10);
   });
+
+  it("shouldn't get token by user not found", async () => {
+    const result = await app.inject({
+      method: "POST",
+      url: "/auth",
+      payload: {
+        username: "reginalda",
+        password: "123",
+      },
+    });
+
+    const { statusCode } = result;
+    const data = JSON.parse(result.payload);
+
+    assert.deepEqual(statusCode, 401);
+    assert.deepEqual(data.message, "User not found");
+  });
+
+  it("shouldn't get token by user or password is invalid", async () => {
+    const result = await app.inject({
+      method: "POST",
+      url: "/auth",
+      payload: {
+        ...USER,
+        password: "1221",
+      },
+    });
+
+    const { statusCode } = result;
+    const data = JSON.parse(result.payload);
+
+    assert.deepEqual(statusCode, 401);
+    assert.deepEqual(data.message, "User or password is invalid");
+  });
+
+  it("shouldn't get token by validation failed", async () => {
+    const result = await app.inject({
+      method: "POST",
+      url: "/auth",
+      payload: {
+        password: "1221",
+      },
+    });
+
+    const { statusCode } = result;
+    const data = JSON.parse(result.payload);
+
+    assert.deepEqual(statusCode, 400);
+    assert.deepEqual(data.message, '"username" is required');
+  });
 });

@@ -26,6 +26,7 @@ const UserSchema = require("./db/strategies/postgres/schemas/userSchema");
 
 const HeroRoute = require("./routes/heroRoutes");
 const AuthRoute = require("./routes/authRoutes");
+const UtilRoute = require("./routes/utilRoutes");
 
 function mapRoutes(instance, methods) {
   return methods.map((method) => instance[method]());
@@ -112,6 +113,7 @@ async function main() {
       new AuthRoute(contextPostgres, process.env.JWT_SECRET),
       AuthRoute.methods()
     ),
+    ...mapRoutes(new UtilRoute(), UtilRoute.methods()),
   ]);
 
   await app.start();

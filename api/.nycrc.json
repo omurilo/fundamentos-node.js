@@ -1,0 +1,16 @@
+{
+  "cache": false,
+  "check-coverage": true,
+  "exclude": [
+    "__tests__/**/*.js",
+    "src/db/strategies/interfaces/crud/index.js",
+    ".heroku",
+    ".github",
+    "node_modules"
+  ],
+  "reporter": ["lcov", "html"],
+  "lines": 90,
+  "statements": 90,
+  "functions": 90,
+  "branches": 90
+}
