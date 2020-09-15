@@ -8,15 +8,15 @@
     "test:watch": "mocha src/__tests__/**/*.test.js -w"
   },
   "dependencies": {
-    "mongoose": "^5.9.5",
+    "mongoose": "^5.10.5",
     "pg": "^7.18.2",
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.21.5"
   },
   "devDependencies": {
-    "@types/sequelize": "^4.28.8",
+    "@types/sequelize": "^4.28.9",
     "mocha": "^7.1.1",
-    "nodemon": "^2.0.2",
-    "sequelize-cli": "^5.5.1"
+    "nodemon": "^2.0.4",
+    "sequelize-cli": "^6.2.0"
   }
 }
