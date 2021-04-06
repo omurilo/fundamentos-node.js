@@ -3898,9 +3898,9 @@ swagger-ui-dist@^3.22.1:
   integrity sha512-vwvJPPbdooTvDwLGzjIXinOXizDJJ6U1hxnJL3y6U3aL1d2MSXDmKg2139XaLBhsVZdnQJV2bOkX4reB+RXamg==
 
 systeminformation@^4.23.3:
-  version "4.27.3"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.27.3.tgz#3fc00b34425807915294f4ed3e86bbc7c85ee1b8"
-  integrity sha512-0Nc8AYEK818h7FI+bbe/kj7xXsMD5zOHvO9alUqQH/G4MHXu5tHQfWqC/bzWOk4JtoQPhnyLgxMYncDA2eeSBw==
+  version "4.34.19"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.34.19.tgz#c5f066cc043482686d95bbc554d52e6ec9e42367"
+  integrity sha512-ssUYQ0s1FFeb8EGtyCX/41cC/XaF84gbNAUfaUTziibx+xCAaR0zrOy0yZlnUrsWDQ+snp/Utl8cx8IdtrevrA==
 
 tar@^4.4.2:
   version "4.4.13"
